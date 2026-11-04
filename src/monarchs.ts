@@ -6,12 +6,14 @@ export type Monarch = {
   start: number
   end?: number
   house: string
-  parent: string
+  parents: [string, string]
   parentId?: string
   fact: string
 }
 
-export const monarchs: Monarch[] = [
+type MonarchRecord = Omit<Monarch, 'parents'> & { parent: string }
+
+const monarchRecords: MonarchRecord[] = [
   {
     id: 'erik-segersall', name: 'Erik Segersäll', byname: 'Segersäll', reign: 'ca 970–995', start: 970, end: 995,
     house: 'Munsöätten', parent: 'Okänd', fact: 'En av de tidigaste kungarna som brukar räknas till Sveriges regentlängd. Hans regeringstid och rike är omdiskuterade i de äldsta källorna.',
@@ -225,6 +227,93 @@ export const monarchs: Monarch[] = [
     house: 'Bernadotteätten', parent: 'Arvprins Gustav Adolf, hertig av Västerbotten', fact: 'Sveriges nuvarande kung. Successionsordningen ändrades 1980 till full kognatisk tronföljd, vilket gjorde kronprinsessan Victoria till tronföljare.',
   },
 ]
+
+const mothersById: Record<string, string> = {
+  'erik-segersall': 'Okänd',
+  'olof-skotkonung': 'Sigrid Storråda (osäkert)',
+  'anund-jakob': 'Estrid av obotriterna',
+  'emund-gamle': 'Edla',
+  stenkil: 'Okänd; uppgifterna är osäkra',
+  halsten: 'Okänd',
+  'inge-aldre': 'Okänd',
+  filip: 'Okänd',
+  'inge-yngre': 'Okänd; uppgifterna är osäkra',
+  'sverker-1': 'Okänd',
+  'erik-9': 'Cecilia (osäkert)',
+  'magnus-henriksson': 'Ingeborg',
+  'karl-7': 'Ulfhild Håkansdotter',
+  'knut-eriksson': 'Kristina Björnsdotter',
+  'sverker-2': 'Cecilia Johansdotter',
+  'erik-10': 'Okänd',
+  'johan-1': 'Ingegerd Birgersdotter',
+  'erik-11': 'Rikissa av Danmark',
+  valdemar: 'Ingeborg Eriksdotter',
+  'magnus-ladulas': 'Ingeborg Eriksdotter',
+  'birger-magnusson': 'Helvig av Holstein',
+  'magnus-eriksson': 'Ingeborg Håkansdotter',
+  'albrekt-meklenburg': 'Eufemia av Sverige',
+  margareta: 'Helvig av Schleswig',
+  'erik-pommern': 'Maria av Mecklenburg',
+  'kristoffer-bayern': 'Katarina av Pommern',
+  'karl-knutsson': 'Margareta Karlsdotter',
+  'kristian-1': 'Hedvig av Schleswig-Holstein',
+  'johan-2': 'Dorotea av Brandenburg',
+  'kristian-2': 'Kristina av Sachsen',
+  'gustav-vasa': 'Cecilia Månsdotter',
+  'erik-14': 'Katarina av Sachsen-Lauenburg',
+  'johan-3': 'Margareta Leijonhufvud',
+  sigismund: 'Katarina Jagellonica',
+  'karl-9': 'Margareta Leijonhufvud',
+  'gustav-2-adolf': 'Kristina av Holstein-Gottorp',
+  kristina: 'Maria Eleonora av Brandenburg',
+  'karl-10-gustav': 'Katarina av Sverige',
+  'karl-11': 'Hedvig Eleonora av Holstein-Gottorp',
+  'karl-12': 'Ulrika Eleonora av Danmark',
+  'ulrika-eleonora': 'Ulrika Eleonora av Danmark',
+  'fredrik-1': 'Maria Amalia av Kurland',
+  'adolf-fredrik': 'Albertina Fredrika av Baden-Durlach',
+  'gustav-3': 'Lovisa Ulrika av Preussen',
+  'gustav-4-adolf': 'Sofia Magdalena av Danmark',
+  'karl-13': 'Lovisa Ulrika av Preussen',
+  'karl-14-johan': 'Jeanne de Saint-Jean',
+  'oscar-1': 'Desideria',
+  'karl-15': 'Josefina av Leuchtenberg',
+  'oscar-2': 'Josefina av Leuchtenberg',
+  'gustav-5': 'Sofia av Nassau',
+  'gustav-6-adolf': 'Victoria av Baden',
+  'carl-16-gustaf': 'Sibylla av Sachsen-Coburg-Gotha',
+}
+
+export const monarchs: Monarch[] = monarchRecords.map(({ parent, ...monarch }) => ({
+  ...monarch,
+  parents: [parent, mothersById[monarch.id] ?? 'Okänd'],
+}))
+
+export const imageArticleById: Record<string, string> = {
+  margareta: 'Margareta Valdemarsdotter',
+  'johan-2': 'Hans av Danmark',
+  kristina: 'Drottning Kristina',
+}
+
+export const houseColors: Record<string, string> = {
+  'Munsöätten': '#c68752',
+  'Stenkilätten': '#64a89d',
+  'Sverkerska ätten': '#cb7182',
+  'Erikska ätten': '#8ea85f',
+  'Magnus Henrikssons ätt': '#ad8ac0',
+  'Bjälboätten': '#d29d45',
+  'Mecklenburgska ätten': '#5f9ac2',
+  'Estridska ätten': '#d27455',
+  'Griffinska ätten': '#7bad7d',
+  'Wittelsbachska ätten': '#c46fa2',
+  'Bondeska ätten': '#7c90c7',
+  'Oldenburgska ätten': '#a7a84f',
+  'Vasaätten': '#5fac8d',
+  'Pfalziska ätten': '#df8651',
+  'Hessiska ätten': '#6199a7',
+  'Holstein-Gottorpska ätten': '#bf6c63',
+  'Bernadotteätten': '#c6a34d',
+}
 
 export const houseDetails: Record<string, { years: string; note: string; tone: string }> = {
   'Bernadotteätten': { years: '1818–nu', note: 'En fransk marskalk blev stamfar till den nuvarande kungafamiljen.', tone: 'rose' },

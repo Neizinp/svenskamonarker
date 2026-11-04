@@ -1,29 +1,26 @@
 :root {
-  --paper: #f2f2eb;
-  --surface: #fffef9;
-  --ink: #1d3028;
-  --pine: #315746;
-  --pine-dark: #19382f;
-  --muted: #788279;
-  --line: #dce0d6;
-  --terracotta: #a45843;
-  --terracotta-light: #d88a6b;
-  --serif: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
-  color: var(--ink);
-  background: var(--paper);
+  color-scheme: dark;
+  --bg: #101512;
+  --surface: #181f1b;
+  --surface-raised: #202a24;
+  --ink: #e7ece5;
+  --muted: #9aa79d;
+  --line: #303b34;
+  --accent: #d3b86e;
   font-family: 'Gill Sans', 'Trebuchet MS', sans-serif;
   font-synthesis: none;
-  font-optical-sizing: auto;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.45;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: var(--ink);
 }
 
 * { box-sizing: border-box; }
-html { min-width: 320px; scroll-behavior: smooth; }
-body { background: var(--paper); margin: 0; min-height: 100vh; min-width: 320px; }
+html { min-width: 320px; background: var(--bg); }
+body { background: var(--bg); margin: 0; min-height: 100vh; min-width: 320px; }
 button, input, select { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
-::selection { background: #d6e0d4; color: var(--pine-dark); }
+::selection { background: #42584a; color: #fff; }
