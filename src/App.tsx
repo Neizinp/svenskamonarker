@@ -29,12 +29,12 @@ const portraitFileById: Record<string, string> = {
 const fileUrl = (fileName: string) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}?width=640`
 
 const historicalPeriods = [
-  { title: 'Bernadotteätten', years: '1809–i dag', start: 1809, end: Infinity, summary: 'Jean Baptiste Bernadotte valdes till svensk tronföljare 1810. Sverige och Norge var i union till 1905; dagens kung har främst representativa uppgifter.' },
-  { title: 'Frihetstid och gustaviansk tid', years: '1718–1809', start: 1718, end: 1809, summary: 'Efter Karl XII:s död fick riksdagen större makt. Gustav III återtog en del av den genom statskuppen 1772.' },
-  { title: 'Stormaktstiden', years: '1611–1718', start: 1611, end: 1718, summary: 'Sverige byggde upp ett välde kring Östersjön och deltog i trettioåriga kriget. Det stora nordiska kriget avslutade stormaktstiden.' },
-  { title: 'Vasatiden', years: '1523–1611', start: 1523, end: 1611, summary: 'Gustav Vasa bröt med Kalmarunionen. Reformationen och arvsmonarkin förändrade kyrkan och statens organisation.' },
-  { title: 'Medeltid och unionsstrider', years: '1250–1523', start: 1250, end: 1523, summary: 'Birger jarl och hans söner stärkte kungamakten. Kalmarunionen förenade de nordiska rikena från 1397, men Sverige gjorde upprepade uppror mot unionsstyret.' },
-  { title: 'Tidiga kungar', years: 'ca 970–1250', start: 0, end: 1250, summary: 'Källorna om de tidigaste kungarna är få och osäkra. Under perioden växte kungamakten fram samtidigt som kristendomen etablerades.' },
+  { id: 'modern-tid', title: 'Modern tid', years: '1809–i dag', start: 1809, end: Infinity, summary: 'Jean Baptiste Bernadotte valdes till svensk tronföljare 1810. Sverige och Norge var i union till 1905; dagens kung har främst representativa uppgifter.' },
+  { id: 'frihetstid', title: 'Frihetstid och gustaviansk tid', years: '1718–1809', start: 1718, end: 1809, summary: 'Efter Karl XII:s död fick riksdagen större makt. Gustav III återtog en del av den genom statskuppen 1772.' },
+  { id: 'stormaktstid', title: 'Stormaktstiden', years: '1611–1718', start: 1611, end: 1718, summary: 'Sverige byggde upp ett välde kring Östersjön och deltog i trettioåriga kriget. Det stora nordiska kriget avslutade stormaktstiden.' },
+  { id: 'vasatid', title: 'Vasatiden', years: '1523–1611', start: 1523, end: 1611, summary: 'Gustav Vasa bröt med Kalmarunionen. Reformationen och arvsmonarkin förändrade kyrkan och statens organisation.' },
+  { id: 'medeltid', title: 'Medeltid och unionsstrider', years: '1250–1523', start: 1250, end: 1523, summary: 'Birger jarl och hans söner stärkte kungamakten. Kalmarunionen förenade de nordiska rikena från 1397, men Sverige gjorde upprepade uppror mot unionsstyret.' },
+  { id: 'tidiga-kungar', title: 'Tidiga kungar', years: 'ca 970–1250', start: 0, end: 1250, summary: 'Källorna om de tidigaste kungarna är få och osäkra. Under perioden växte kungamakten fram samtidigt som kristendomen etablerades.' },
 ] as const
 
 async function loadPortraits(): Promise<Record<string, Portrait>> {
@@ -109,6 +109,7 @@ function PortraitImage({
 
 function App() {
   const [query, setQuery] = useState('')
+  const [activePeriodId, setActivePeriodId] = useState<string>(historicalPeriods[0].id)
   const [selected, setSelected] = useState<Monarch | null>(null)
   const [imageById, setImageById] = useState<Record<string, Portrait>>({})
 
@@ -126,10 +127,41 @@ function App() {
     .filter((monarch) => !normalizedQuery || `${monarch.name} ${monarch.byname ?? ''} ${monarch.house} ${monarch.reign}`
       .toLocaleLowerCase('sv-SE').includes(normalizedQuery))
 
-  const timelineGroups = historicalPeriods
+  const allTimelineGroups = historicalPeriods
     .map((period) => ({ ...period, members: filteredMonarchs.filter((monarch) => monarch.start >= period.start && monarch.start < period.end) }))
-    .filter(({ members }) => members.length > 0)
+  const timelineGroups = normalizedQuery
+    ? allTimelineGroups.filter((period) => period.members.length > 0)
+    : allTimelineGroups
+  const currentActivePeriodId = timelineGroups.some((period) => period.id === activePeriodId)
+    ? activePeriodId
+    : timelineGroups[0]?.id
   const eagerPortraitIds = new Set(filteredMonarchs.slice(0, 4).map(({ id }) => id))
+
+  useEffect(() => {
+    let frame = 0
+    const updateActivePeriod = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        const sections = document.querySelectorAll<HTMLElement>('.timeline-era')
+        const markerY = window.innerHeight * 0.28
+        let current = sections[0]
+        sections.forEach((section) => {
+          if (section.getBoundingClientRect().top <= markerY) current = section
+        })
+        if (current) setActivePeriodId(current.id)
+      })
+    }
+
+    window.addEventListener('scroll', updateActivePeriod, { passive: true })
+    window.addEventListener('resize', updateActivePeriod)
+    updateActivePeriod()
+    return () => {
+      window.removeEventListener('scroll', updateActivePeriod)
+      window.removeEventListener('resize', updateActivePeriod)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [normalizedQuery])
 
   return (
     <main className="app-shell">
@@ -145,62 +177,82 @@ function App() {
         </label>
       </div>
 
-      <div className="timeline-eras" aria-label="Sveriges regenter indelade efter historisk period">
-        {timelineGroups.map(({ title, years, summary, members }) => {
-          const houseGroups = [...new Set(members.map((monarch) => monarch.house))].map((house) => ({
-            house,
-            note: houseDetails[house]?.note,
-            members: members.filter((monarch) => monarch.house === house),
-          }))
+      <div className="historical-layout">
+        <nav className="era-rail" aria-label="Epoker i Sveriges historia">
+          {timelineGroups.map((period) => (
+            <a
+              className={`era-link${currentActivePeriodId === period.id ? ' active' : ''}`}
+              href={`#${period.id}`}
+              key={period.id}
+              aria-current={currentActivePeriodId === period.id ? 'location' : undefined}
+              onClick={() => setActivePeriodId(period.id)}
+            >
+              <span className="era-link-marker" aria-hidden="true" />
+              <span className="era-link-copy">
+                <span>{period.years}</span>
+                <strong>{period.title}</strong>
+              </span>
+            </a>
+          ))}
+        </nav>
 
-          return (
-            <section className="timeline-era" key={title}>
-              <header className="era-heading">
-                <span className="era-years">{years}</span>
-                <h2>{title}</h2>
-                <p>{summary}</p>
-              </header>
-              {houseGroups.map(({ house, note, members: houseMembers }) => {
-                const colorStyle = { '--house-color': houseColors[house] } as CSSProperties
-                return (
-                  <section className="house-section" key={house}>
-                    <header className="house-heading" style={colorStyle}>
-                      <h3>{house}</h3>
-                      {note && <p>{note}</p>}
-                    </header>
-                    <ol className="timeline-list" aria-label={`${house}, nyast överst`}>
-                      {houseMembers.map((monarch) => {
-                        const image = imageById[monarch.id]
-                        const monarchColorStyle = { '--house-color': houseColors[monarch.house] } as CSSProperties
-                        return (
-                          <li className="timeline-item" key={monarch.id}>
-                            <button className="timeline-card" type="button" style={monarchColorStyle} onClick={() => setSelected(monarch)}>
-                              <PortraitImage monarch={monarch} image={image} className="monarch-portrait" loading={eagerPortraitIds.has(monarch.id) ? 'eager' : 'lazy'} />
-                              <span className="timeline-card-main">
-                                <span className="reign-date">{monarch.reign}</span>
-                                <span className="monarch-name">{monarch.name}</span>
-                                <span className="monarch-house">{monarch.house}</span>
-                              </span>
-                              <span className="parents-list">
-                                <span><b>Far</b>{monarch.parents[0]}</span>
-                                <span><b>Mor</b>{monarch.parents[1]}</span>
-                              </span>
-                              <span className="timeline-card-fact">
-                                {monarch.motto && <span className="monarch-motto"><b>VALSPRÅK</b> ”{monarch.motto}”</span>}
-                                <span>{monarch.fact}</span>
-                              </span>
-                            </button>
-                          </li>
-                        )
-                      })}
-                    </ol>
-                  </section>
-                )
-              })}
-            </section>
-          )
-        })}
-        {filteredMonarchs.length === 0 && <p className="empty-results">Inga monarker matchar sökningen.</p>}
+        <div className="era-content">
+          {timelineGroups.map(({ id, title, years, summary, members }) => {
+            const houseGroups = [...new Set(members.map((monarch) => monarch.house))].map((house) => ({
+              house,
+              note: houseDetails[house]?.note,
+              members: members.filter((monarch) => monarch.house === house),
+            }))
+
+            return (
+              <section className="timeline-era" id={id} key={id}>
+                <header className="era-heading">
+                  <span className="era-years">{years}</span>
+                  <h2>{title}</h2>
+                  <p>{summary}</p>
+                </header>
+                {houseGroups.map(({ house, note, members: houseMembers }) => {
+                  const colorStyle = { '--house-color': houseColors[house] } as CSSProperties
+                  return (
+                    <section className="house-section" key={house}>
+                      <header className="house-heading" style={colorStyle}>
+                        <h3>{house}</h3>
+                        {note && <p>{note}</p>}
+                      </header>
+                      <ol className="timeline-list" aria-label={`${house}, nyast överst`}>
+                        {houseMembers.map((monarch) => {
+                          const image = imageById[monarch.id]
+                          const monarchColorStyle = { '--house-color': houseColors[monarch.house] } as CSSProperties
+                          return (
+                            <li className="timeline-item" key={monarch.id}>
+                              <button className="timeline-card" type="button" style={monarchColorStyle} onClick={() => setSelected(monarch)}>
+                                <PortraitImage monarch={monarch} image={image} className="monarch-portrait" loading={eagerPortraitIds.has(monarch.id) ? 'eager' : 'lazy'} />
+                                <span className="timeline-card-main">
+                                  <span className="reign-date">{monarch.reign}</span>
+                                  <span className="monarch-name">{monarch.name}</span>
+                                  <span className="monarch-house">{monarch.house}</span>
+                                </span>
+                                <span className="parents-list">
+                                  <span><b>Far</b>{monarch.parents[0]}</span>
+                                  <span><b>Mor</b>{monarch.parents[1]}</span>
+                                </span>
+                                <span className="timeline-card-fact">
+                                  {monarch.motto && <span className="monarch-motto"><b>VALSPRÅK</b> ”{monarch.motto}”</span>}
+                                  <span>{monarch.fact}</span>
+                                </span>
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ol>
+                    </section>
+                  )
+                })}
+              </section>
+            )
+          })}
+          {filteredMonarchs.length === 0 && <p className="empty-results">Inga monarker matchar sökningen.</p>}
+        </div>
       </div>
 
       {selected && (

@@ -8,10 +8,20 @@
 .search-field input { background: transparent; border: 0; color: var(--ink); font-size: 15px; min-width: 0; outline: 0; width: 100%; }
 .search-field input::placeholder { color: #a4b0a7; }
 .clear-search, .close-detail { align-items: center; background: transparent; border: 0; color: var(--muted); cursor: pointer; display: inline-flex; justify-content: center; padding: 5px; }
-.timeline-eras { padding-top: 5px; }
-.timeline-era { margin-top: 48px; }
-.era-heading { border-top: 1px solid var(--line); padding: 16px 0 22px; }
+.historical-layout { align-items: start; display: grid; gap: 42px; grid-template-columns: 220px minmax(0, 1fr); padding-top: 22px; }
+.era-rail { align-self: start; display: grid; max-height: calc(100vh - 48px); overflow-y: auto; padding: 12px 0; position: sticky; top: 24px; }
+.era-rail::before { background: var(--line); content: ''; left: 7px; position: absolute; top: 22px; bottom: 22px; width: 1px; }
+.era-link { align-items: start; color: var(--muted); display: grid; gap: 13px; grid-template-columns: 16px minmax(0, 1fr); min-height: 70px; padding: 9px 0; position: relative; text-decoration: none; }
+.era-link:hover, .era-link.active { color: var(--ink); }
+.era-link-marker { background: var(--bg); border: 2px solid var(--muted); border-radius: 50%; height: 15px; margin-top: 2px; position: relative; width: 15px; z-index: 1; }
+.era-link.active .era-link-marker { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent); }
+.era-link-copy { display: grid; gap: 4px; }
+.era-link-copy > span { color: var(--accent); font-size: 12px; }
+.era-link-copy strong { font-family: Georgia, 'Palatino Linotype', serif; font-size: 15px; font-weight: 400; line-height: 1.3; }
+.era-content { min-width: 0; }
 .era-years { color: var(--accent); font-size: 13px; font-weight: 700; }
+.timeline-era { padding: 0 0 28px; scroll-margin-top: 24px; }
+.era-heading { border-top: 1px solid var(--line); padding: 16px 0 22px; }
 .era-heading h2 { color: var(--ink); font-family: Georgia, 'Palatino Linotype', serif; font-size: 32px; font-weight: 400; line-height: 1.15; margin: 5px 0 8px; }
 .era-heading p { color: var(--muted); font-family: Georgia, 'Palatino Linotype', serif; font-size: 16px; line-height: 1.5; margin: 0; max-width: 900px; }
 .house-section { margin: 4px 0 28px; }
@@ -64,11 +74,16 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .masthead h1 { font-size: 42px; }
   .control-bar { align-items: stretch; flex-wrap: wrap; gap: 10px 16px; padding: 12px 0; }
   .search-field { flex-basis: 100%; max-width: none; }
+  .historical-layout { grid-template-columns: 1fr; gap: 0; }
+  .era-rail { max-height: none; overflow: visible; padding: 4px 0 10px; position: relative; top: auto; }
+  .era-rail::before { bottom: 20px; top: 16px; }
+  .era-link { min-height: 54px; padding: 6px 0; }
+  .era-link-copy { align-items: baseline; column-gap: 12px; display: flex; flex-wrap: wrap; }
+  .era-link-copy strong { font-size: 15px; }
   .era-heading h2 { font-size: 27px; }
   .era-heading p { font-size: 15px; }
   .house-heading h3 { font-size: 19px; }
   .house-heading p { font-size: 14px; }
-  .timeline-era { margin-top: 36px; }
   .timeline-card { gap: 14px 12px; grid-template-columns: 112px minmax(0, 1fr); min-height: 0; padding: 12px; }
   .timeline-card > .monarch-portrait { grid-column: 1; grid-row: 1; height: 152px; width: 112px; }
   .timeline-card-main { grid-column: 2; grid-row: 1; padding: 2px 0 0; }
