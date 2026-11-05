@@ -209,6 +209,10 @@ function App() {
                     <span><b>FAR</b>{monarch.parents[0]}</span>
                     <span><b>MOR</b>{monarch.parents[1]}</span>
                   </span>
+                  <span className="timeline-card-fact">
+                    {monarch.motto && <span className="monarch-motto"><b>VALSPRÅK</b> ”{monarch.motto}”</span>}
+                    <span>{monarch.fact}</span>
+                  </span>
                 </button>
               </li>
             )
@@ -256,6 +260,7 @@ function App() {
             <div className="detail-date">{selected.reign}</div>
             <h2 id="detail-name">{selected.name}</h2>
             {selected.byname && <div className="detail-byname">Tillnamn: {selected.byname}</div>}
+            {selected.motto && <div className="detail-motto"><b>Valspråk</b> ”{selected.motto}”</div>}
             <p className="detail-fact">{selected.fact}</p>
             <dl className="detail-data">
               <div><dt>Ätt</dt><dd>{selected.house}</dd></div>

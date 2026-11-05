@@ -9,6 +9,7 @@ export type Monarch = {
   parents: [string, string]
   parentId?: string
   fact: string
+  motto?: string
 }
 
 type MonarchRecord = Omit<Monarch, 'parents'> & { parent: string }
@@ -200,7 +201,7 @@ const monarchRecords: MonarchRecord[] = [
   },
   {
     id: 'karl-14-johan', name: 'Karl XIV Johan', reign: '1818–1844', start: 1818, end: 1844,
-    house: 'Bernadotteätten', parent: 'Jean Henri Bernadotte', fact: 'Född i Frankrike som Jean Baptiste Bernadotte. Som kronprins ledde han Sverige i unionen med Norge.',
+    house: 'Bernadotteätten', parent: 'Jean Henri Bernadotte', motto: 'Folkets kärlek min belöning', fact: 'Född i Frankrike som Jean Baptiste Bernadotte. Som kronprins ledde han Sverige i unionen med Norge.',
   },
   {
     id: 'oscar-1', name: 'Oscar I', reign: '1844–1859', start: 1844, end: 1859,
@@ -212,19 +213,19 @@ const monarchRecords: MonarchRecord[] = [
   },
   {
     id: 'oscar-2', name: 'Oscar II', reign: '1872–1907', start: 1872, end: 1907,
-    house: 'Bernadotteätten', parent: 'Oscar I', parentId: 'oscar-1', fact: 'Karl XV:s yngre bror. Unionen mellan Sverige och Norge upplöstes fredligt under hans regering 1905.',
+    house: 'Bernadotteätten', parent: 'Oscar I', parentId: 'oscar-1', motto: 'Brödrafolkens väl', fact: 'Karl XV:s yngre bror. Unionen mellan Sverige och Norge upplöstes fredligt under hans regering 1905.',
   },
   {
     id: 'gustav-5', name: 'Gustav V', reign: '1907–1950', start: 1907, end: 1950,
-    house: 'Bernadotteätten', parent: 'Oscar II', parentId: 'oscar-2', fact: 'Den förste svenske kungen som avstod från kröning. Hans regeringstid sträckte sig över båda världskrigen.',
+    house: 'Bernadotteätten', parent: 'Oscar II', parentId: 'oscar-2', motto: 'Med folket för fosterlandet', fact: 'Den förste svenske kungen som avstod från kröning. Hans regeringstid sträckte sig över båda världskrigen.',
   },
   {
     id: 'gustav-6-adolf', name: 'Gustav VI Adolf', reign: '1950–1973', start: 1950, end: 1973,
-    house: 'Bernadotteätten', parent: 'Gustav V', parentId: 'gustav-5', fact: 'Arkeolog och hängiven botaniker. Hans långa regering bidrog till övergången till en mer ceremoniell roll för monarkin.',
+    house: 'Bernadotteätten', parent: 'Gustav V', parentId: 'gustav-5', motto: 'Plikten framför allt', fact: 'Arkeolog och hängiven botaniker. Hans långa regering bidrog till övergången till en mer ceremoniell roll för monarkin.',
   },
   {
     id: 'carl-16-gustaf', name: 'Carl XVI Gustaf', reign: '1973–', start: 1973,
-    house: 'Bernadotteätten', parent: 'Arvprins Gustav Adolf, hertig av Västerbotten', fact: 'Sveriges nuvarande kung. Successionsordningen ändrades 1980 till full kognatisk tronföljd, vilket gjorde kronprinsessan Victoria till tronföljare.',
+    house: 'Bernadotteätten', parent: 'Arvprins Gustav Adolf, hertig av Västerbotten', motto: 'För Sverige – i tiden', fact: 'Sveriges nuvarande kung. Successionsordningen ändrades 1980 till full kognatisk tronföljd, vilket gjorde kronprinsessan Victoria till tronföljare.',
   },
 ]
 
