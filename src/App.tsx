@@ -83,13 +83,15 @@ function PortraitImage({
   monarch,
   image,
   className,
+  loading = 'lazy',
 }: {
   monarch: Monarch
   image?: Portrait
   className: string
+  loading?: 'eager' | 'lazy'
 }) {
   return image ? (
-    <img className={className} src={image.src} alt={`Historisk bild: ${monarch.name}`} loading="lazy" />
+    <img className={className} src={image.src} alt={`Historisk bild: ${monarch.name}`} loading={loading} />
   ) : (
     <div className={`${className} portrait-placeholder`} aria-label={`Bild saknas för ${monarch.name}`}>
       <Crown size={22} strokeWidth={1.4} />
@@ -192,14 +194,14 @@ function App() {
 
       {view === 'timeline' ? (
         <ol className="timeline-list" aria-label="Sveriges monarker, senast överst">
-          {filteredMonarchs.map((monarch) => {
+          {filteredMonarchs.map((monarch, index) => {
             const image = imageById[monarch.id]
             const colorStyle = { '--house-color': houseColors[monarch.house] } as CSSProperties
             return (
               <li className="timeline-item" key={monarch.id}>
                 <span className="timeline-rail" style={colorStyle} aria-hidden="true"><i /></span>
                 <button className="timeline-card" type="button" style={colorStyle} onClick={() => setSelected(monarch)}>
-                  <PortraitImage monarch={monarch} image={image} className="monarch-portrait" />
+                  <PortraitImage monarch={monarch} image={image} className="monarch-portrait" loading={index < 4 ? 'eager' : 'lazy'} />
                   <span className="timeline-card-main">
                     <span className="reign-date">{monarch.reign}</span>
                     <span className="monarch-name">{monarch.name}</span>
